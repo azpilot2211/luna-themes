@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuLabel, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { Settings, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 interface iAppProps{
@@ -31,9 +32,11 @@ export function UserNav({ email, name, userImage}: iAppProps){
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/sell">Sell Your product</Link>
+                        <Link href="/sell"><ShoppingCart className="pr-2" />Sell Your product</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>Test Item</DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/settings"><Settings className="pr-2" />Settings</Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Test Item</DropdownMenuItem>
                     <DropdownMenuItem>Test Item</DropdownMenuItem>
                 </DropdownMenuGroup>

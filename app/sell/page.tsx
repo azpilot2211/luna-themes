@@ -7,11 +7,13 @@ import { SelectCategory } from "../components/SelectCategory";
 import { Textarea } from "@/components/ui/textarea";
 import { TipTapEditor } from "../components/Editor";
 import { UploadDropzone } from "../lib/uploadthing";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { JSONContent } from "@tiptap/react";
 import { useFormState } from "react-dom";
 import { SellProduct, State } from "../actions";
+import { toast } from "sonner";
+import { Submitbutton } from "../components/SubmitButton";
+import { redirect } from "next/navigation";
 
 export default function SellRoute(){
     const initialState: State = {
@@ -23,7 +25,14 @@ export default function SellRoute(){
     const [images, setImages] = useState<null | string[]>(null);
     const [productFile, setProductFile] = useState<null | string>(null);
 
-    console.log(state?.errors);
+    useEffect(() => {
+        if(state.status === 'success'){
+            toast.success(state.message);
+            redirect('/');
+        } else if(state.status === 'error'){
+            toast.error(state.message);
+        }
+    }, [state])
     return(
         <section className="max-w-7xl mx-auto px-4 md:px-8 mb-14">
             <Card>
@@ -35,7 +44,7 @@ export default function SellRoute(){
                     <CardContent className="flex flex-col gap-y-10">
                         <div className="flex flex-col gap-y-2">
                             <Label>Name:</Label>
-                            <Input name="name" type="text" placeholder="Enter the name of your product" />
+                            <Input name="name" type="text" placeholder="Enter the name of your product" required minLength={3} />
                             {state?.errors?.["name"]?.[0] && (
                                 <p className="text-destructive">{state?.errors?.["name"]?.[0]}</p>
                             )}
@@ -49,14 +58,14 @@ export default function SellRoute(){
                         </div>
                         <div className="flex flex-col gap-y-2">
                             <Label>Price:</Label>
-                            <Input placeholder="$29.99" type="number" name="price" />
+                            <Input placeholder="$29.99" type="number" name="price" required min={1} />
                             {state?.errors?.["price"]?.[0] && (
                                 <p className="text-destructive">{state?.errors?.["price"]?.[0]}</p>
                             )}
                         </div>
                         <div className="flex flex-col gap-y-2">
                             <Label>Short Summary:</Label>
-                            <Textarea placeholder="Decribe your product here..." name="smallDescription" />
+                            <Textarea placeholder="Decribe your product here..." name="smallDescription" required minLength={10} />
                         </div>
                             {state?.errors?.["smallDescription"]?.[0] && (
                                 <p className="text-destructive">{state?.errors?.["smallDescription"]?.[0]}</p>
@@ -75,9 +84,10 @@ export default function SellRoute(){
                             <UploadDropzone endpoint="imageUploader"
                             onClientUploadComplete={(res) => {
                                 setImages(res.map((item) => item.url));
+                                toast.success("Images uploaded successfully");
                             }}
                             onUploadError={(error: Error) => {
-                                throw new Error(`${error}`);
+                                toast.error("Something went wrong, please try again");
                             }}
                             />
                             {state?.errors?.["images"]?.[0] && (
@@ -90,10 +100,11 @@ export default function SellRoute(){
                             <UploadDropzone
                             onClientUploadComplete={(res) => {
                                 setProductFile(res[0].url);
+                                toast.success("File uploaded successfully");
                             }}
                             endpoint="productFileUpload"
                             onUploadError={(error: Error) =>{
-                                throw new Error(`${error}`);
+                                toast.error("Something went wrong, please try again");
                             }} />
                             {state?.errors?.["productFile"]?.[0] && (
                                 <p className="text-destructive">{state?.errors?.["productFile"]?.[0]}</p>
@@ -101,7 +112,7 @@ export default function SellRoute(){
                         </div>
                     </CardContent>
                     <CardFooter className="mt-5">
-                        <Button type="submit">Submit Form</Button>
+                        <Submitbutton title="Submit your product" />
                     </CardFooter>
                 </form>
             </Card>
